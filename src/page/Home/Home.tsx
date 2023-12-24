@@ -2,6 +2,8 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { getTrendingMovies } from "../../services/movies-api";
 import { Result } from "../../models/models";
+import FilmCard from "../../components/FilmCard";
+import { Link } from "react-router-dom";
 
 export default function Home() {
   const [trendingFilms, setTrendingFilms] = useState<Result[]>([]);
@@ -15,20 +17,19 @@ export default function Home() {
         console.log(error);
       });
   }, []);
-
+  console.log(trendingFilms);
+  
   return (
     <div>
-      <h1>Trending today</h1>
+      <h1 className="text-center p-9 text-5xl font-bold text-gray-700">
+        Trending today
+      </h1>
       {trendingFilms.length !== 0 && (
-        <div>
+        <div className="grid grid-cols-4 w-[1650px] ml-auto mr-auto gap-x-[90px]">
           {trendingFilms.map((film) => (
-            <div key={film.id}>
-              <img
-                src={`https://image.tmdb.org/t/p/w400/${film.poster_path}`}
-                alt={film.title}
-              />
-              <h2>{film.title}</h2>
-            </div>
+            <Link to={`/movies/${film.id}`} key={film.id} className="h-[785px]">
+              <FilmCard film={film} />
+            </Link>
           ))}
         </div>
       )}

@@ -1,0 +1,32 @@
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { getMoviesReviews } from "../services/movies-api";
+import { Result } from "../models/reviewsDetails";
+
+export default function Reviews() {
+  const { movieId } = useParams();
+  const [reviews, setReviews] = useState<Result[]>([]);
+
+  useEffect(() => {
+    getMoviesReviews(movieId).then(setReviews);
+  }, [movieId]);
+    
+  return (
+    <div>
+      {reviews.length === 0 ? (
+        <h3>We don`t have any reviews for this movie!</h3>
+      ) : (
+        <ul>
+          {reviews.map((review) => (
+            <li key={review.id}>
+              <p>
+                <span>Author:</span> {review.author}
+              </p>
+              <p>{review.content}</p>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
