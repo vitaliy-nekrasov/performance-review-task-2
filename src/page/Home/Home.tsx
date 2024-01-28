@@ -17,7 +17,6 @@ export default function Home() {
         console.log(error);
       });
   }, []);
-  console.log(trendingFilms);
   
   return (
     <div>

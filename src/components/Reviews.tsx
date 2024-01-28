@@ -16,10 +16,10 @@ export default function Reviews() {
       {reviews.length === 0 ? (
         <h3>We don`t have any reviews for this movie!</h3>
       ) : (
-        <ul>
+        <ul className="flex flex-col gap-4">
           {reviews.map((review) => (
-            <li key={review.id}>
-              <p>
+            <li key={review.id} className="flex flex-col gap-1">
+              <p className="text-2xl font-medium">
                 <span>Author:</span> {review.author}
               </p>
               <p>{review.content}</p>

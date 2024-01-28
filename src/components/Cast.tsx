@@ -19,11 +19,15 @@ export default function Cast() {
   };
 
   return (
-    <div>
-      <ul>
+    <div className="w-[1650px] ml-auto mr-auto mt-10">
+      <ul className="grid grid-cols-4 gap-4">
         {castInfo.map((cast) => (
           <li key={cast.id}>
-            <img src={getPicture(cast.profile_path)} alt={cast.original_name} />
+            <img
+              className="w-[100%] h-[90%] object-cover"
+              src={getPicture(cast.profile_path)}
+              alt={cast.original_name}
+            />
             <p>{cast.original_name}</p>
             <div>
               <span>Character:</span> {cast.character}

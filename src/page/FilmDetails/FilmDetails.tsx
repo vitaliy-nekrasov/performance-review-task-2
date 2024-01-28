@@ -4,6 +4,8 @@ import { getMoviesById } from "../../services/movies-api";
 import { FilmDetailsInterface, Genre } from "../../models/filmDetails";
 import ReplyIcon from "@mui/icons-material/Reply";
 import { AdditionalInformation } from "../../components/AdditionalInformation";
+import { Rating } from "@mui/material";
+import { styled } from "@mui/material/styles";
 
 export default function FilmDetails() {
   const { movieId } = useParams();
@@ -32,6 +34,12 @@ export default function FilmDetails() {
     
   const backLinkHref = location.state?.from ?? { pathname: "/" };
 
+  const StyledRating = styled(Rating)({
+    "& .MuiRating-iconFilled": {
+      color: "#eb3211",
+    },
+  });
+
   return (
     <div className="w-[1650px] ml-auto mr-auto mt-10">
       <Link
@@ -47,8 +55,14 @@ export default function FilmDetails() {
           <h1 className="text-4xl font-bold">
             {movieInfo.original_title} ({movieYear})
           </h1>
-          <div className="text-2xl font-medium">
-            User score: {movieInfo.vote_average}
+          <div className="text-2xl font-medium flex items-center gap-2">
+            User score:
+            <StyledRating
+              name="read-only"
+              value={movieInfo.vote_average}
+              readOnly
+              max={10}
+            />
           </div>
           <div>
             <span className="text-2xl font-medium">Overview:</span>
