@@ -11,6 +11,7 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Link as ReactLink } from "react-router-dom";
+import { Notify } from "notiflix";
 
 const defaultTheme = createTheme();
 
@@ -18,10 +19,34 @@ export default function SignUp() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    const userData: {
+      userName: string | null;
+      email: string | null;
+      password: string | null;
+    } = {
+      userName: data.get("userName") as string | null,
+      email: data.get("email") as string | null,
+      password: data.get("password") as string | null,
+    };
+
+    let usersData: {
+      userName: string | null;
+      email: string | null;
+      password: string | null;
+    }[] = JSON.parse(localStorage.getItem("users") || "[]");
+    const userExists = usersData.some(
+      (user) => user.email === userData.email
+    );
+
+    if (userExists) {
+      Notify.failure("A user with this email already exists! =(");
+      return;
+    }
+
+    usersData.push(userData);
+    localStorage.setItem("users", JSON.stringify(usersData));
+    localStorage.setItem("loggedInUser", JSON.stringify(userData));
+    window.location.href = "/performance-review-task-2/";
   };
 
   return (

@@ -1,4 +1,4 @@
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState, Suspense, useContext } from "react";
 import { useParams, useLocation, Link, Outlet } from "react-router-dom";
 import { getMoviesById } from "../../services/movies-api";
 import { FilmDetailsInterface, Genre } from "../../models/filmDetails";
@@ -6,15 +6,38 @@ import ReplyIcon from "@mui/icons-material/Reply";
 import { AdditionalInformation } from "../../components/AdditionalInformation";
 import { Rating } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import Button from "@mui/material/Button";
+import { User, Result } from "../../models/models";
+import { AuthContext } from "../../services/AuthContext";
 
 export default function FilmDetails() {
+  const { isLoggedIn } = useContext(AuthContext);
   const { movieId } = useParams();
   const [movieInfo, setMovieInfo] = useState<FilmDetailsInterface | null>(null);
+  const [inFavorites, setInFavorites] = useState(false);
   const location = useLocation();
-  
+
+  const loggedInUser: User = JSON.parse(
+    localStorage.getItem("loggedInUser") || "{}"
+  );
+  let usersData: User[] = JSON.parse(localStorage.getItem("users") || "[]");
+
+  const userInArrayIndex = usersData.findIndex(
+    (user) => user.email === loggedInUser.email
+  );
+   
   useEffect(() => {
     getMoviesById(movieId).then(setMovieInfo);
-  }, [movieId]);
+
+    if (userInArrayIndex !== -1) {
+      const isDuplicate = usersData[userInArrayIndex].favorites?.some(
+        (favorite) => favorite.id === movieInfo?.id
+      );
+      if (isDuplicate) {
+        setInFavorites(true);
+      }
+    }
+  }, [movieId, movieInfo?.id, userInArrayIndex, usersData, loggedInUser]);
   if (!movieInfo) {
     return null;
   }
@@ -39,6 +62,49 @@ export default function FilmDetails() {
       color: "#eb3211",
     },
   });
+
+  function addToFavorites(movieInfo: FilmDetailsInterface) {
+    if (userInArrayIndex !== -1) {
+      if (!usersData[userInArrayIndex].favorites) {
+        usersData[userInArrayIndex].favorites = [];
+      }
+
+      const isDuplicate = usersData[userInArrayIndex].favorites?.some(
+        (favorite) => favorite.id === movieInfo.id
+      );
+
+      if (!isDuplicate) {
+        usersData[userInArrayIndex].favorites?.push(movieInfo);
+        localStorage.setItem("users", JSON.stringify(usersData));
+      } else {
+        console.error("This movie is already in favorites.");
+      }
+
+      return usersData;
+    } else {
+      console.error("Logged in user not found in users data.");
+      return null;
+    }
+  }
+
+  function removeFromFavorites(movieId: number) {
+    if (userInArrayIndex !== -1) {
+      if (usersData[userInArrayIndex].favorites) {
+        const indexToRemove: number | undefined = usersData[userInArrayIndex].favorites?.findIndex(
+          (favorite) => favorite.id === movieId
+        );
+
+        if (indexToRemove !== -1 && indexToRemove !== undefined) {
+          usersData[userInArrayIndex].favorites?.splice(indexToRemove, 1);
+          localStorage.setItem("users", JSON.stringify(usersData));
+          setInFavorites(false);
+        } else {
+          console.error("Movie not found in favorites.");
+        }
+      } 
+      return usersData;
+    }
+  }
 
   return (
     <div className="w-[1650px] ml-auto mr-auto mt-10">
@@ -72,6 +138,29 @@ export default function FilmDetails() {
             <span className="text-2xl font-medium">Genres:</span>
             <p className="text-xl font-normal">{getGenres(movieInfo.genres)}</p>
           </div>
+          {isLoggedIn && (
+            <div>
+              {inFavorites ? (
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  className="w-[220px]"
+                  onClick={() => removeFromFavorites(Number(movieId))}
+                >
+                  Remove from favorites
+                </Button>
+              ) : (
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  className="w-[170px]"
+                  onClick={() => addToFavorites(movieInfo)}
+                >
+                  Add to favorites
+                </Button>
+              )}
+            </div>
+          )}
         </div>
       </div>
       <AdditionalInformation link={backLinkHref} />

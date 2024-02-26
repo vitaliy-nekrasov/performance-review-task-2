@@ -1,3 +1,4 @@
+import { FilmDetailsInterface } from "./filmDetails";
 export interface RootInterface {
   page: number;
   results: Result[];
@@ -21,4 +22,11 @@ export interface Result {
   video: boolean;
   vote_average: number;
   vote_count: number;
+}
+
+export interface User {
+  email: string;
+  userName?: string;
+  password?: string;
+  favorites?: FilmDetailsInterface[] | undefined;
 }

@@ -12,6 +12,7 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Link as ReactLink } from "react-router-dom";
 import { styled } from "@mui/material/styles";
+import { Notify } from "notiflix";
 
 const defaultTheme = createTheme();
 
@@ -19,10 +20,26 @@ export default function SignIn() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    const userData: { email: string | null; password: string | null } = {
+      email: data.get("email") as string | null,
+      password: data.get("password") as string | null,
+    };
+
+    let usersData: { email: string; password: string }[] = JSON.parse(
+      localStorage.getItem("users") || "[]"
+    );
+    const loggedInUser = usersData.find(
+      (user) =>
+        user.email === userData.email && user.password === userData.password
+    );
+
+    if (!loggedInUser) {
+      Notify.failure("Incorrect email or password =(");
+      return;
+    }
+
+    localStorage.setItem("loggedInUser", JSON.stringify(loggedInUser));
+    window.location.href = "/performance-review-task-2/";
   };
 
   return (

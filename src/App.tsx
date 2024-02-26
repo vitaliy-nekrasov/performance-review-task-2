@@ -7,6 +7,7 @@ import Cast from './components/Cast';
 import Reviews from './components/Reviews';
 import SignUp from './page/SignUp/SignUp';
 import SignIn from './page/SignIn/SignIn';
+import Favorites from './page/Favorites/Favorites';
 
 function App() {
   
@@ -15,6 +16,7 @@ function App() {
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="favorites" element={<Favorites />} />
         <Route path="movies/:movieId" element={<FilmDetails />}>
           <Route path="cast" element={<Cast />} />
           <Route path="reviews" element={<Reviews />} />
