@@ -4,19 +4,35 @@ import { getTrendingMovies } from "../../services/movies-api";
 import { Result } from "../../models/models";
 import FilmCard from "../../components/FilmCard";
 import { Link } from "react-router-dom";
+import Button from "@mui/material/Button";
 
 export default function Home() {
   const [trendingFilms, setTrendingFilms] = useState<Result[]>([]);
   const [error, setError] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
   useEffect(() => {
-    getTrendingMovies()
-      .then((movies) => setTrendingFilms(movies))
+    loadTrendingMovies(currentPage);
+  }, [currentPage]);
+
+  const loadTrendingMovies = (page: number) => {
+    getTrendingMovies(page)
+      .then((movies) => {
+        if (page === 1) {
+          setTrendingFilms(movies);
+        } else {
+          setTrendingFilms((prevMovies) => [...prevMovies, ...movies]);
+        }
+      })
       .catch((error) => {
         setError(error.message);
         console.log(error);
       });
-  }, []);
+  };
+
+  const handleLoadMore = () => {
+    setCurrentPage((prevPage) => prevPage + 1);
+  };
   
   return (
     <div>
@@ -32,6 +48,16 @@ export default function Home() {
           ))}
         </div>
       )}
+      <div className="flex justify-center">
+        <Button
+          variant="contained"
+          color="secondary"
+          className="w-[170px]"
+          onClick={handleLoadMore}
+        >
+          Load more
+        </Button>
+      </div>
       {trendingFilms.length === 0 && error !== "" && <h3>Error</h3>}
     </div>
   );

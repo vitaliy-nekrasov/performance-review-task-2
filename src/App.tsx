@@ -8,6 +8,8 @@ import Reviews from './components/Reviews';
 import SignUp from './page/SignUp/SignUp';
 import SignIn from './page/SignIn/SignIn';
 import Favorites from './page/Favorites/Favorites';
+import PrivateRoute from './components/PrivateRoute';
+import { Footer } from './components/Footer';
 
 function App() {
   
@@ -16,7 +18,10 @@ function App() {
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="favorites" element={<Favorites />} />
+        <Route
+          path="favorites"
+          element={<PrivateRoute redirectTo="/" component={Favorites} />}
+        />
         <Route path="movies/:movieId" element={<FilmDetails />}>
           <Route path="cast" element={<Cast />} />
           <Route path="reviews" element={<Reviews />} />
@@ -24,6 +29,7 @@ function App() {
         <Route path="sign-up" element={<SignUp />} />
         <Route path="sign-in" element={<SignIn />} />
       </Routes>
+      < Footer />
     </>
   );
 }
