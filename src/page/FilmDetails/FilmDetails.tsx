@@ -16,7 +16,7 @@ export default function FilmDetails() {
   const [movieInfo, setMovieInfo] = useState<FilmDetailsInterface | null>(null);
   const [inFavorites, setInFavorites] = useState(false);
   const location = useLocation();
-
+  
   const loggedInUser: User = JSON.parse(
     localStorage.getItem("loggedInUser") || "{}"
   );

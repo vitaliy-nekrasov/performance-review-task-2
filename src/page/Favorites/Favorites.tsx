@@ -34,7 +34,12 @@ export default function Favorites() {
       {favoritesFilms.length !== 0 && (
         <div className="grid grid-cols-4 w-[1650px] ml-auto mr-auto gap-x-[90px]">
           {favoritesFilms.map((film) => (
-            <Link to={`/movies/${film.id}`} key={film.id} className="h-[785px]">
+            <Link
+              to={`/movies/${film.id}`}
+              key={film.id}
+              className="h-[785px]"
+              state={{ from: "/favorites" }}
+            >
               <FilmCardFavorites film={film} />
             </Link>
           ))}
