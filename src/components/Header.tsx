@@ -58,7 +58,7 @@ export function Header() {
           ) : (
             <div className="flex gap-4">
               <Link to={"sign-in"}>
-                <Button variant="contained">Log in</Button>
+                <Button variant="contained" onClick={()=>{window.location.href = "/performance-review-task-2/sign-in"}}>Log in</Button>
               </Link>
               <Link to={"sign-up"}>
                 <Button variant="contained" color="secondary">
