@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { getMoviesCast } from "../services/movies-api";
-import { Casts } from "../models/castDetails";
+import { CastsInfo } from "../models/castDetails";
 
 export default function Cast() {
   const { movieId } = useParams();
-  const [castInfo, setCastInfo] = useState<Casts[]>([]);
+  const [castInfo, setCastInfo] = useState<CastsInfo[]>([]);
 
   useEffect(() => {
     getMoviesCast(movieId).then(setCastInfo);
@@ -19,7 +19,7 @@ export default function Cast() {
   };
 
   return (
-    <div className="w-[1650px] ml-auto mr-auto mt-10">
+    <div className="w-[1550px] ml-auto mr-auto mt-10">
       <ul className="grid grid-cols-4 gap-4">
         {castInfo.map((cast) => (
           <li key={cast.id}>

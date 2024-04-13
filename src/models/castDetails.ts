@@ -32,3 +32,11 @@ export interface Casts {
   credit_id: string;
   order: number;
 }
+
+export type CastsInfo = Pick<
+  Casts,
+  | "id"
+  | "profile_path"
+  | "original_name"
+  | "character"
+>;

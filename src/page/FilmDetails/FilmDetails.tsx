@@ -9,6 +9,7 @@ import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 import { User, Result } from "../../models/models";
 import { AuthContext } from "../../services/AuthContext";
+import { useLoggedInUser } from "../../hooks/useLoggedInUser";
 
 export default function FilmDetails() {
   const { isLoggedIn } = useContext(AuthContext);
@@ -16,16 +17,15 @@ export default function FilmDetails() {
   const [movieInfo, setMovieInfo] = useState<FilmDetailsInterface | null>(null);
   const [inFavorites, setInFavorites] = useState(false);
   const location = useLocation();
-  
-  const loggedInUser: User = JSON.parse(
-    localStorage.getItem("loggedInUser") || "{}"
-  );
+
+  const loggedInUser = useLoggedInUser();
+
   let usersData: User[] = JSON.parse(localStorage.getItem("users") || "[]");
 
   const userInArrayIndex = usersData.findIndex(
-    (user) => user.email === loggedInUser.email
+    (user) => user.email === loggedInUser?.email
   );
-   
+
   useEffect(() => {
     getMoviesById(movieId).then(setMovieInfo);
 
@@ -54,7 +54,7 @@ export default function FilmDetails() {
     }
     return `https://image.tmdb.org/t/p/w400/${poster}`;
   };
-    
+
   const backLinkHref = location.state?.from ?? { pathname: "/" };
 
   const StyledRating = styled(Rating)({
@@ -90,9 +90,9 @@ export default function FilmDetails() {
   function removeFromFavorites(movieId: number) {
     if (userInArrayIndex !== -1) {
       if (usersData[userInArrayIndex].favorites) {
-        const indexToRemove: number | undefined = usersData[userInArrayIndex].favorites?.findIndex(
-          (favorite) => favorite.id === movieId
-        );
+        const indexToRemove: number | undefined = usersData[
+          userInArrayIndex
+        ].favorites?.findIndex((favorite) => favorite.id === movieId);
 
         if (indexToRemove !== -1 && indexToRemove !== undefined) {
           usersData[userInArrayIndex].favorites?.splice(indexToRemove, 1);
@@ -101,13 +101,13 @@ export default function FilmDetails() {
         } else {
           console.error("Movie not found in favorites.");
         }
-      } 
+      }
       return usersData;
     }
   }
 
   return (
-    <div className="w-[1650px] ml-auto mr-auto mt-10">
+    <div className="w-[1550px] ml-auto mr-auto mt-10">
       <Link
         to={backLinkHref}
         className="flex gap-x-[4px] w-[120px] h-[40px] bg-gray-500 text-white font-semibold justify-center items-center rounded-md"

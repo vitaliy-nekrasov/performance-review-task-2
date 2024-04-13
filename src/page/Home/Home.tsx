@@ -40,7 +40,7 @@ export default function Home() {
         Trending today
       </h1>
       {trendingFilms.length !== 0 && (
-        <div className="grid grid-cols-4 w-[1650px] ml-auto mr-auto gap-x-[90px]">
+        <div className="grid grid-cols-4 w-[1550px] ml-auto mr-auto gap-x-[90px]">
           {trendingFilms.map((film) => (
             <Link to={`/movies/${film.id}`} key={film.id} className="h-[785px]" state={{from:"/"}}>
               <FilmCard film={film} />

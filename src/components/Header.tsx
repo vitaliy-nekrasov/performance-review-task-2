@@ -37,7 +37,7 @@ export function Header() {
 
   return (
     <header className="flex items-center h-24 w-full bg-gray-500">
-      <div className="w-[1650px] ml-auto mr-auto flex items-center justify-between">
+      <div className="w-[1550px] ml-auto mr-auto flex items-center justify-between">
         <Link to={"/"}>
           <ReactLogo className="w-12 fill-yellow-400" />
         </Link>
