@@ -49,7 +49,11 @@ export function Header() {
           )}
           {isLoggedIn ? (
             <div className="flex items-center gap-3">
-              <img src="/user.png" alt="User avatar" className="h-9" />
+              <img
+                src="/performance-review-task-2/user.png"
+                alt="User avatar"
+                className="h-9"
+              />
               <p className="text-yellow-400 font-bold">{userName}</p>
               <Button variant="contained" color="secondary" onClick={logOut}>
                 Log out
@@ -58,7 +62,14 @@ export function Header() {
           ) : (
             <div className="flex gap-4">
               <Link to={"sign-in"}>
-                <Button variant="contained" onClick={()=>{window.location.href = "/performance-review-task-2/sign-in"}}>Log in</Button>
+                <Button
+                  variant="contained"
+                  onClick={() => {
+                    window.location.href = "/performance-review-task-2/sign-in";
+                  }}
+                >
+                  Log in
+                </Button>
               </Link>
               <Link to={"sign-up"}>
                 <Button variant="contained" color="secondary">
