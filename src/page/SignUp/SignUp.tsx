@@ -1,10 +1,8 @@
 import * as React from "react";
-import { useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
@@ -14,42 +12,38 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Link as ReactLink } from "react-router-dom";
 import { Notify } from "notiflix";
 import PasswordStrengthBar from "react-password-strength-bar-with-style-item";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
 
 const defaultTheme = createTheme();
 
 export default function SignUp() {
-  const [password, setPassword] = useState<string>("");
-  const [validPassword, setValidPassword] = useState<boolean>(false);
-
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newPassword = e.target.value;
-    setPassword(newPassword);
-    const passwordRegex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{8,}$/;
-    const isValid = passwordRegex.test(newPassword);
-    setValidPassword(isValid);
+  const initialValues = {
+    userName: "",
+    email: "",
+    password: "",
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const userData: {
-      userName: string | null;
-      email: string | null;
-      password: string | null;
-    } = {
-      userName: data.get("userName") as string | null,
-      email: data.get("email") as string | null,
-      password: data.get("password") as string | null,
-    };
+  const validationSchema = Yup.object({
+    userName: Yup.string().required("Required"),
+    email: Yup.string().email("Invalid email format").required("Required"),
+    password: Yup.string()
+      .min(8, "Password must be at least 8 characters")
+      .matches(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])/,
+        "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
+      )
+      .required("Required"),
+  });
 
-    let usersData: {
-      userName: string | null;
-      email: string | null;
-      password: string | null;
-    }[] = JSON.parse(localStorage.getItem("users") || "[]");
+  const handleSubmit = (values: {
+    userName: string;
+    email: string;
+    password: string;
+  }) => {
+    let usersData = JSON.parse(localStorage.getItem("users") || "[]");
     const userExists = usersData.some(
-      (user) => user.email === userData.email
+      (user: { email: string }) => user.email === values.email
     );
 
     if (userExists) {
@@ -57,9 +51,9 @@ export default function SignUp() {
       return;
     }
 
-    usersData.push(userData);
+    usersData.push(values);
     localStorage.setItem("users", JSON.stringify(usersData));
-    localStorage.setItem("loggedInUser", JSON.stringify(userData));
+    localStorage.setItem("loggedInUser", JSON.stringify(values));
     window.location.href = "/performance-review-task-2/";
   };
 
@@ -81,80 +75,86 @@ export default function SignUp() {
           <Typography component="h1" variant="h5">
             Sign up
           </Typography>
-          <Box
-            component="form"
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
             onSubmit={handleSubmit}
-            sx={{ mt: 3 }}
-            autoComplete="off"
           >
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <TextField
-                  name="userName"
-                  required
+            {({ values, handleChange, setFieldValue }) => (
+              <Form>
+                <Grid container spacing={2}>
+                  <Grid item xs={12}>
+                    <Field
+                      as={TextField}
+                      name="userName"
+                      required
+                      fullWidth
+                      id="userName"
+                      label="User Name"
+                      autoFocus
+                      autoComplete="off"
+                      helperText={<ErrorMessage name="userName" />}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Field
+                      as={TextField}
+                      name="email"
+                      required
+                      fullWidth
+                      id="email"
+                      label="Email Address"
+                      type="email"
+                      autoComplete="off"
+                      helperText={<ErrorMessage name="email" />}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Field
+                      as={TextField}
+                      name="password"
+                      required
+                      fullWidth
+                      id="password"
+                      label="Password"
+                      type="password"
+                      autoComplete="off"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        handleChange(e);
+                        setFieldValue("password", e.target.value);
+                      }}
+                      helperText={<ErrorMessage name="password" />}
+                    />
+                    {values.password !== "" && (
+                      <PasswordStrengthBar
+                        password={values.password}
+                        scoreWords={["Weak", "Weak", "Okay", "Good", "Strong"]}
+                        scoreWordClassName="!text-black !text-lg"
+                        shortScoreWord="Too short"
+                        minLength={8}
+                      />
+                    )}
+                  </Grid>
+                </Grid>
+                <Button
+                  type="submit"
                   fullWidth
-                  id="userName"
-                  label="User Name"
-                  autoFocus
-                  autoComplete="off"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  type="email"
-                  autoComplete="off"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  id="password"
-                  autoComplete="off"
-                  onChange={handlePasswordChange}
-                  error={!validPassword && password.length > 0}
-                  helperText={
-                    !validPassword && password.length > 0
-                      ? "Password must contain at least 8 characters, including at least one uppercase letter, one lowercase letter, one number, and one special character."
-                      : ""
-                  }
-                />
-                {password !== "" && (
-                  <PasswordStrengthBar
-                    password={password}
-                    scoreWords={["Weak", "Weak", "Okay", "Good", "Strong"]}
-                    scoreWordClassName="!text-black !text-lg"
-                    shortScoreWord="Too short"
-                    minLength={8}
-                  />
-                )}
-              </Grid>
-            </Grid>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-              disabled={!validPassword}
-            >
-              Sign Up
-            </Button>
-            <Grid container justifyContent="flex-end">
-              <Grid item>
-                <ReactLink to={"/sign-in"}>
-                  <Link variant="body2">Already have an account? Sign in</Link>
-                </ReactLink>
-              </Grid>
-            </Grid>
-          </Box>
+                  variant="contained"
+                  sx={{ mt: 3, mb: 2 }}
+                  disabled={!validationSchema.isValidSync(values)}
+                >
+                  Sign Up
+                </Button>
+                <Grid container justifyContent="flex-end">
+                  <Grid item>
+                    <ReactLink to={"/sign-in"}>
+                      Already have an account? Sign in
+                    </ReactLink>
+                  </Grid>
+                </Grid>
+              </Form>
+            )}
+          </Formik>
         </Box>
       </Container>
     </ThemeProvider>

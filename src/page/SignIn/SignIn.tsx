@@ -4,7 +4,6 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
@@ -14,6 +13,8 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Link as ReactLink } from "react-router-dom";
 import { Notify } from "notiflix";
 import OTPInput from "react-otp-input";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
 
 const defaultTheme = createTheme();
 
@@ -30,24 +31,26 @@ export default function SignIn() {
   const [loggedInUser, setLoggedInUser] = useState<object>({});
   const [otp, setOtp] = useState<string>("");
   const [code, setCode] = useState<string>("");
-  
+
   useEffect(() => {
-    if (code !== '') {
-      alert("Your OTP:" + code);     
+    if (code !== "") {
+      alert("Your OTP: " + code);
     }
   }, [code]);
-  
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const userData: { email: string | null; password: string | null } = {
-      email: data.get("email") as string | null,
-      password: data.get("password") as string | null,
-    };
-    
+
+  const initialValues = {
+    email: "",
+    password: "",
+  };
+
+  const validationSchema = Yup.object({
+    email: Yup.string().email("Invalid email format").required("Required"),
+    password: Yup.string().required("Required"),
+  });
+
+  const handleSubmit = (values: { email: string; password: string }) => {
     const loggedInUser = usersData.find(
-      (user) =>
-        user.email === userData.email && user.password === userData.password
+      (user) => user.email === values.email && user.password === values.password
     );
 
     if (!loggedInUser) {
@@ -57,7 +60,7 @@ export default function SignIn() {
     const newCode = Math.floor(Math.random() * 1000000)
       .toString()
       .padStart(6, "0");
-    setLoggedInUser(loggedInUser);  
+    setLoggedInUser(loggedInUser);
     setGetOtp(true);
     setCode(newCode);
   };
@@ -65,7 +68,7 @@ export default function SignIn() {
   const handleChange = (otp: string) => {
     setOtp(otp);
   };
-  
+
   const handleOtpSubmit = () => {
     if (otp === code) {
       localStorage.setItem("loggedInUser", JSON.stringify(loggedInUser));
@@ -89,53 +92,50 @@ export default function SignIn() {
             alignItems: "center",
           }}
         >
-          <div>
-            {!getOtp && (
-              <div>
-                <Avatar
-                  sx={{
-                    m: 1,
-                    bgcolor: "#1976d2",
-                    marginLeft: "auto",
-                    marginRight: "auto",
-                  }}
-                >
-                  <LockOutlinedIcon />
-                </Avatar>
-                <Typography
-                  component="h1"
-                  variant="h5"
-                  sx={{
-                    textAlign: "center",
-                  }}
-                >
-                  Sign in
-                </Typography>
-                <Box
-                  component="form"
-                  onSubmit={handleSubmit}
-                  noValidate
-                  sx={{ mt: 1 }}
-                >
-                  <TextField
+          {!getOtp ? (
+            <>
+              <Avatar
+                sx={{
+                  m: 1,
+                  bgcolor: "#1976d2",
+                }}
+              >
+                <LockOutlinedIcon />
+              </Avatar>
+              <Typography component="h1" variant="h5">
+                Sign in
+              </Typography>
+              <Formik
+                initialValues={initialValues}
+                validationSchema={validationSchema}
+                onSubmit={handleSubmit}
+              >
+                <Form>
+                  <Field
+                    as={TextField}
                     margin="normal"
-                    required
                     fullWidth
                     id="email"
                     label="Email Address"
                     name="email"
                     autoFocus
                     autoComplete="off"
+                    helperText={
+                      <ErrorMessage name="email" />
+                    }
                   />
-                  <TextField
+                  <Field
+                    as={TextField}
                     margin="normal"
-                    required
                     fullWidth
                     name="password"
                     label="Password"
                     type="password"
                     id="password"
                     autoComplete="off"
+                    helperText={
+                      <ErrorMessage name="password" />
+                    }
                   />
                   <Button
                     type="submit"
@@ -148,59 +148,52 @@ export default function SignIn() {
                   <Grid container>
                     <Grid item>
                       <ReactLink to={"/sign-up/"}>
-                        <Link variant="body2">
-                          {"Don't have an account? Sign Up"}
-                        </Link>
+                        Don't have an account? Sign Up
                       </ReactLink>
                     </Grid>
                   </Grid>
-                </Box>
-              </div>
-            )}
-          </div>
-          <div>
-            {getOtp && (
-              <div>
-                <Typography
-                  component="h2"
-                  variant="h5"
-                  sx={{
-                    marginBottom: "24px",
-                  }}
-                >
-                  Enter one-time password:
-                </Typography>
-                <OTPInput
-                  value={otp}
-                  onChange={handleChange}
-                  numInputs={6}
-                  containerStyle="justify-evenly"
-                  renderInput={(inputProps, index) => (
-                    <input
-                      {...inputProps}
-                      key={index}
-                      style={{
-                        width: "30px",
-                        height: "40px",
-                        fontSize: "22px",
-                        textAlign: "center",
-                        fontWeight: "500",
-                        borderRadius: "6px",
-                      }}
-                    />
-                  )}
-                />
-                <Button
-                  onClick={handleOtpSubmit}
-                  fullWidth
-                  variant="contained"
-                  sx={{ mt: 3, mb: 2 }}
-                >
-                  Submit
-                </Button>
-              </div>
-            )}
-          </div>
+                </Form>
+              </Formik>
+            </>
+          ) : (
+            <>
+              <Typography
+                component="h2"
+                variant="h5"
+                sx={{ marginBottom: "24px" }}
+              >
+                Enter one-time password:
+              </Typography>
+              <OTPInput
+                value={otp}
+                onChange={handleChange}
+                numInputs={6}
+                containerStyle="justify-evenly"
+                renderInput={(inputProps, index) => (
+                  <input
+                    {...inputProps}
+                    key={index}
+                    style={{
+                      width: "30px",
+                      height: "40px",
+                      fontSize: "22px",
+                      textAlign: "center",
+                      fontWeight: "500",
+                      borderRadius: "6px",
+                    }}
+                  />
+                )}
+              />
+              <Button
+                onClick={handleOtpSubmit}
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2 }}
+              >
+                Submit
+              </Button>
+            </>
+          )}
         </Box>
       </Container>
     </ThemeProvider>
