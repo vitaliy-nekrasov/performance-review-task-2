@@ -12,7 +12,7 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Link as ReactLink } from "react-router-dom";
 import { Notify } from "notiflix";
-import OTPInput from "react-otp-input";
+import OTPInput from "../../utils/OTPInput";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
@@ -120,9 +120,7 @@ export default function SignIn() {
                     name="email"
                     autoFocus
                     autoComplete="off"
-                    helperText={
-                      <ErrorMessage name="email" />
-                    }
+                    helperText={<ErrorMessage name="email" />}
                   />
                   <Field
                     as={TextField}
@@ -133,9 +131,7 @@ export default function SignIn() {
                     type="password"
                     id="password"
                     autoComplete="off"
-                    helperText={
-                      <ErrorMessage name="password" />
-                    }
+                    helperText={<ErrorMessage name="password" />}
                   />
                   <Button
                     type="submit"
@@ -165,24 +161,10 @@ export default function SignIn() {
                 Enter one-time password:
               </Typography>
               <OTPInput
+                numInputs={6}
                 value={otp}
                 onChange={handleChange}
-                numInputs={6}
-                containerStyle="justify-evenly"
-                renderInput={(inputProps, index) => (
-                  <input
-                    {...inputProps}
-                    key={index}
-                    style={{
-                      width: "30px",
-                      height: "40px",
-                      fontSize: "22px",
-                      textAlign: "center",
-                      fontWeight: "500",
-                      borderRadius: "6px",
-                    }}
-                  />
-                )}
+                onSubmit={handleOtpSubmit}
               />
               <Button
                 onClick={handleOtpSubmit}
