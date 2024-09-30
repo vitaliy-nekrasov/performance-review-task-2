@@ -11,9 +11,9 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Link as ReactLink } from "react-router-dom";
 import { Notify } from "notiflix";
-import PasswordStrengthBar from "react-password-strength-bar-with-style-item";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import PasswordStrength from "../../utils/PasswordStrength";
 
 const defaultTheme = createTheme();
 
@@ -123,16 +123,9 @@ export default function SignUp() {
                         handleChange(e);
                         setFieldValue("password", e.target.value);
                       }}
-                      helperText={<ErrorMessage name="password" />}
                     />
                     {values.password !== "" && (
-                      <PasswordStrengthBar
-                        password={values.password}
-                        scoreWords={["Weak", "Weak", "Okay", "Good", "Strong"]}
-                        scoreWordClassName="!text-black !text-lg"
-                        shortScoreWord="Too short"
-                        minLength={8}
-                      />
+                      <PasswordStrength password={values.password} />
                     )}
                   </Grid>
                 </Grid>
