@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Box, LinearProgress, Typography } from "@mui/material";
+import { checkPasswordCriteria } from "./modules/checkPasswordCriteria";
 
 interface PasswordStrengthProps {
   password: string;
@@ -8,18 +9,6 @@ interface PasswordStrengthProps {
 const PasswordStrength: React.FC<PasswordStrengthProps> = ({ password }) => {
   const [strength, setStrength] = useState(0);
   const [strengthText, setStrengthText] = useState("Very weak");
-
-  const checkPasswordCriteria = (password: string) => {
-    let criteria = 0;
-
-    if (password.length >= 8) criteria += 1;
-    if (/[A-Z]/.test(password)) criteria += 1;
-    if (/[a-z]/.test(password)) criteria += 1;
-    if (/\d/.test(password)) criteria += 1;
-    if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) criteria += 1;
-
-    return criteria;
-  };
 
   useEffect(() => {
     const strengthValue = checkPasswordCriteria(password);
