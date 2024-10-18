@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { getMoviesCast } from "../services/movies-api";
 import { CastsInfo } from "../models/castDetails";
+import List from "./List";
 
-export default function Cast() {
+export default function CastList() {
   const { movieId } = useParams();
   const [castInfo, setCastInfo] = useState<CastsInfo[]>([]);
 
@@ -20,21 +21,23 @@ export default function Cast() {
 
   return (
     <div className="w-[1550px] ml-auto mr-auto mt-10">
-      <ul className="grid grid-cols-4 gap-4">
-        {castInfo.map((cast) => (
-          <li key={cast.id}>
+      <List
+        items={castInfo}
+        renderItem={(item) => (
+          <>
             <img
               className="w-[100%] h-[90%] object-cover"
-              src={getPicture(cast.profile_path)}
-              alt={cast.original_name}
+              src={getPicture(item.profile_path)}
+              alt={item.original_name}
             />
-            <p>{cast.original_name}</p>
+            <p>{item.original_name}</p>
             <div>
-              <span>Character:</span> {cast.character}
+              <span>Character:</span> {item.character}
             </div>
-          </li>
-        ))}
-      </ul>
+          </>
+        )}
+        className="grid grid-cols-4 gap-4"
+      />
     </div>
   );
 }

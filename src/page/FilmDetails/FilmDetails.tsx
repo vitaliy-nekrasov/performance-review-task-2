@@ -10,6 +10,7 @@ import Button from "@mui/material/Button";
 import { User, Result } from "../../models/models";
 import { AuthContext } from "../../services/AuthContext";
 import { useLoggedInUser } from "../../hooks/useLoggedInUser";
+import StringList from "../../components/StringList";
 
 export default function FilmDetails() {
   const { isLoggedIn } = useContext(AuthContext);
@@ -42,11 +43,8 @@ export default function FilmDetails() {
     return null;
   }
   const movieYear = new Date(movieInfo.release_date).getFullYear();
-  const getGenres = (genres: Genre[] | undefined) => {
-    if (!genres) {
-      return;
-    }
-    return genres.map((genre) => genre.name).join(", ");
+  const getGenres = (genres: Genre[]) => {
+    return genres.map((genre) => genre.name);
   };
   const getPoster = (poster: string | undefined) => {
     if (!poster) {
@@ -136,7 +134,7 @@ export default function FilmDetails() {
           </div>
           <div>
             <span className="text-2xl font-medium">Genres:</span>
-            <p className="text-xl font-normal">{getGenres(movieInfo.genres)}</p>
+            <StringList strings={getGenres(movieInfo.genres)} />
           </div>
           {isLoggedIn && (
             <div>
