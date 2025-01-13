@@ -13,8 +13,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Link as ReactLink } from "react-router-dom";
 import { Notify } from "notiflix";
 import OTPInput from "../../utils/OTPInput";
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import * as Yup from "yup";
+import { useForm, Controller } from "react-hook-form";
 
 const defaultTheme = createTheme();
 
@@ -32,23 +31,25 @@ export default function SignIn() {
   const [otp, setOtp] = useState<string>("");
   const [code, setCode] = useState<string>("");
 
+  const {
+    handleSubmit,
+    control,
+    watch,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
   useEffect(() => {
     if (code !== "") {
       alert("Your OTP: " + code);
     }
   }, [code]);
 
-  const initialValues = {
-    email: "",
-    password: "",
-  };
-
-  const validationSchema = Yup.object({
-    email: Yup.string().email("Invalid email format").required("Required"),
-    password: Yup.string().required("Required"),
-  });
-
-  const handleSubmit = (values: { email: string; password: string }) => {
+  const onSubmit = (values: { email: string; password: string }) => {
     const loggedInUser = usersData.find(
       (user) => user.email === values.email && user.password === values.password
     );
@@ -105,51 +106,70 @@ export default function SignIn() {
               <Typography component="h1" variant="h5">
                 Sign in
               </Typography>
-              <Formik
-                initialValues={initialValues}
-                validationSchema={validationSchema}
-                onSubmit={handleSubmit}
+              <Box
+                component="form"
+                onSubmit={handleSubmit(onSubmit)}
+                noValidate
               >
-                <Form>
-                  <Field
-                    as={TextField}
-                    margin="normal"
-                    fullWidth
-                    id="email"
-                    label="Email Address"
-                    name="email"
-                    autoFocus
-                    autoComplete="off"
-                    helperText={<ErrorMessage name="email" />}
-                  />
-                  <Field
-                    as={TextField}
-                    margin="normal"
-                    fullWidth
-                    name="password"
-                    label="Password"
-                    type="password"
-                    id="password"
-                    autoComplete="off"
-                    helperText={<ErrorMessage name="password" />}
-                  />
-                  <Button
-                    type="submit"
-                    fullWidth
-                    variant="contained"
-                    sx={{ mt: 3, mb: 2 }}
-                  >
-                    Sign In
-                  </Button>
-                  <Grid container>
-                    <Grid item>
-                      <ReactLink to={"/sign-up/"}>
-                        Don't have an account? Sign Up
-                      </ReactLink>
-                    </Grid>
+                <Controller
+                  name="email"
+                  control={control}
+                  rules={{
+                    required: "Email is required",
+                    pattern: {
+                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                      message: "Invalid email format",
+                    },
+                  }}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      margin="normal"
+                      fullWidth
+                      id="email"
+                      label="Email Address"
+                      autoFocus
+                      autoComplete="off"
+                      error={!!errors.email}
+                      helperText={errors.email?.message}
+                    />
+                  )}
+                />
+                <Controller
+                  name="password"
+                  control={control}
+                  rules={{ required: "Password is required" }}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      margin="normal"
+                      fullWidth
+                      name="password"
+                      label="Password"
+                      type="password"
+                      id="password"
+                      autoComplete="off"
+                      error={!!errors.password}
+                      helperText={errors.password?.message}
+                    />
+                  )}
+                />
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  sx={{ mt: 3, mb: 2 }}
+                >
+                  Sign In
+                </Button>
+                <Grid container>
+                  <Grid item>
+                    <ReactLink to={"/sign-up/"}>
+                      Don't have an account? Sign Up
+                    </ReactLink>
                   </Grid>
-                </Form>
-              </Formik>
+                </Grid>
+              </Box>
             </>
           ) : (
             <>
