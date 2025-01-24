@@ -13,15 +13,27 @@ const TestComponent = () => {
 };
 
 describe("useLoggedInUser", () => {
+  const originalConsoleError = console.error;
+
   beforeEach(() => {
     localStorage.clear();
+    jest.restoreAllMocks();
   });
 
   it("should show the text 'No user logged in' if the data in localStorage is incorrect", () => {
+    const consoleErrorMock = jest
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
     localStorage.setItem("loggedInUser", "invalid data");
-      
+
     render(<TestComponent />);
+
     expect(screen.getByText("No user logged in")).toBeInTheDocument();
+
+    expect(consoleErrorMock).toHaveBeenCalledWith(
+      "Invalid JSON in localStorage:",
+      expect.any(SyntaxError)
+    );
   });
 
   it("should show username from localStorage", () => {
@@ -29,6 +41,13 @@ describe("useLoggedInUser", () => {
     localStorage.setItem("loggedInUser", validUserData);
 
     render(<TestComponent />);
+
     expect(screen.getByText("John Doe")).toBeInTheDocument();
+  });
+
+  it("should show the text 'No user logged in' if no user data is in localStorage", () => {
+    render(<TestComponent />);
+
+    expect(screen.getByText("No user logged in")).toBeInTheDocument();
   });
 });

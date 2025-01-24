@@ -6,8 +6,13 @@ export const useLoggedInUser = () => {
 
   useEffect(() => {
     try {
-      const userData = JSON.parse(localStorage.getItem("loggedInUser") || "{}");
-      setLoggedInUser(userData);
+      const userDataString = localStorage.getItem("loggedInUser");
+      if (userDataString) {
+        const userData = JSON.parse(userDataString);
+        setLoggedInUser(userData);
+      } else {
+        setLoggedInUser(null);
+      }
     } catch (error) {
       console.error("Invalid JSON in localStorage:", error);
       setLoggedInUser(null);
