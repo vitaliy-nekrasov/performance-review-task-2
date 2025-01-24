@@ -13,6 +13,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Link as ReactLink } from "react-router-dom";
 import { Notify } from "notiflix";
 import OTPInput from "../../utils/OTPInput";
+import { useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 
 const defaultTheme = createTheme();
@@ -22,19 +23,24 @@ interface UserData {
   password: string;
 }
 
+const data = {
+  email: '',
+  password: '',
+}
+
 export default function SignIn() {
   const [getOtp, setGetOtp] = useState<boolean>(false);
   const [usersData, setUsersData] = useState<UserData[]>(
     JSON.parse(localStorage.getItem("users") || "[]")
   );
-  const [loggedInUser, setLoggedInUser] = useState<object>({});
+  const [loggedInUser, setLoggedInUser] = useState<UserData>(data);
   const [otp, setOtp] = useState<string>("");
   const [code, setCode] = useState<string>("");
+  const navigate = useNavigate();
 
   const {
     handleSubmit,
     control,
-    watch,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -69,10 +75,12 @@ export default function SignIn() {
   const handleChange = (otp: string) => {
     setOtp(otp);
   };
+  
 
   const handleOtpSubmit = () => {
     if (otp === code) {
       localStorage.setItem("loggedInUser", JSON.stringify(loggedInUser));
+      setLoggedInUser(loggedInUser);
       window.location.href = "/performance-review-task-2/";
     } else {
       Notify.failure("Incorrect OTP =(");
@@ -195,6 +203,13 @@ export default function SignIn() {
                 Submit
               </Button>
             </>
+          )}
+          {loggedInUser && (
+            <div data-testid="logged-in-user" className="opacity-0">
+              <Typography variant="body1">
+                Logged in as: {loggedInUser.email}
+              </Typography>
+            </div>
           )}
         </Box>
       </Container>
