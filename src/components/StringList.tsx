@@ -6,7 +6,7 @@ type StringListProps = {
 };
 
 const StringList: React.FC<StringListProps> = ({ strings }) => {
-  return <List items={strings} renderItem={(item) => <span>{item}</span>} />;
+  return <List items={strings} renderItem={(item) => <span style={{fontSize: '16px', fontWeight: 400}}>{item}</span>} />;
 };
 
 export default StringList;

@@ -11,6 +11,17 @@ import { User, Result } from "../../models/models";
 import { AuthContext } from "../../services/AuthContext";
 import { useLoggedInUser } from "../../hooks/useLoggedInUser";
 import StringList from "../../components/StringList";
+import {
+  Wrapper,
+  BackLink,
+  ContentWrapper,
+  PosterImage,
+  InfoWrapper,
+  Title,
+  UserScore,
+  Section,
+  StyledButton,
+} from "./FilmDetails.styled";
 
 export default function FilmDetails() {
   const { isLoggedIn } = useContext(AuthContext);
@@ -105,66 +116,57 @@ export default function FilmDetails() {
   }
 
   return (
-    <div className="w-[1550px] ml-auto mr-auto mt-10">
-      <Link
-        to={backLinkHref}
-        className="flex gap-x-[4px] w-[120px] h-[40px] bg-gray-500 text-white font-semibold justify-center items-center rounded-md"
-      >
-        <ReplyIcon />
-        <p>Go Back</p>
-      </Link>
-      <div className="mt-10 flex gap-x-[42px]">
-        <img src={getPoster(movieInfo.poster_path)} alt="" />
-        <div className="flex flex-col gap-y-[24px]">
-          <h1 className="text-4xl font-bold">
-            {movieInfo.original_title} ({movieYear})
-          </h1>
-          <div className="text-2xl font-medium flex items-center gap-2">
-            User score:
-            <StyledRating
-              name="read-only"
-              value={movieInfo.vote_average}
-              readOnly
-              max={10}
-            />
-          </div>
+  <Wrapper>
+    <BackLink to={backLinkHref}>
+      <ReplyIcon />
+      <p>Go Back</p>
+    </BackLink>
+    <ContentWrapper>
+      <PosterImage src={getPoster(movieInfo.poster_path)} alt="" />
+      <InfoWrapper>
+        <Title>
+          {movieInfo.original_title} ({movieYear})
+        </Title>
+        <UserScore>
+          User score:
+          <StyledRating name="read-only" value={movieInfo.vote_average} readOnly max={10} />
+        </UserScore>
+        <Section>
+          <span>Overview:</span>
+          <p>{movieInfo.overview}</p>
+        </Section>
+        <Section>
+          <span>Genres:</span>
+          <StringList strings={getGenres(movieInfo.genres)} />
+        </Section>
+        {isLoggedIn && (
           <div>
-            <span className="text-2xl font-medium">Overview:</span>
-            <p className="text-xl font-normal">{movieInfo.overview}</p>
+            {inFavorites ? (
+              <StyledButton
+                variant="contained"
+                color="secondary"
+                fullWidth
+                onClick={() => removeFromFavorites(Number(movieId))}
+              >
+                Remove from favorites
+              </StyledButton>
+            ) : (
+              <StyledButton
+                variant="contained"
+                color="secondary"
+                onClick={() => addToFavorites(movieInfo)}
+              >
+                Add to favorites
+              </StyledButton>
+            )}
           </div>
-          <div>
-            <span className="text-2xl font-medium">Genres:</span>
-            <StringList strings={getGenres(movieInfo.genres)} />
-          </div>
-          {isLoggedIn && (
-            <div>
-              {inFavorites ? (
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  className="w-[220px]"
-                  onClick={() => removeFromFavorites(Number(movieId))}
-                >
-                  Remove from favorites
-                </Button>
-              ) : (
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  className="w-[170px]"
-                  onClick={() => addToFavorites(movieInfo)}
-                >
-                  Add to favorites
-                </Button>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-      <AdditionalInformation link={backLinkHref} />
-      <Suspense fallback={null}>
-        <Outlet />
-      </Suspense>
-    </div>
+        )}
+      </InfoWrapper>
+    </ContentWrapper>
+    <AdditionalInformation link={backLinkHref} />
+    <Suspense fallback={null}>
+      <Outlet />
+    </Suspense>
+  </Wrapper>
   );
 }

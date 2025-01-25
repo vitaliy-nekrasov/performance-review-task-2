@@ -2,12 +2,12 @@ import styled from "styled-components";
 import { NavLink } from "react-router-dom";
 
 export const Wrapper = styled.div`
-  padding-top: 10px;
-  padding-bottom: 10px;
+  padding-top: ${(p) => p.theme.space[4]};
+  padding-bottom: ${(p) => p.theme.space[4]};
 `;
 
 export const Title = styled.h2`
-  margin-bottom: 20px;
+  margin-bottom: ${(p) => p.theme.space[6]};
   font-size: 2.5rem;
   font-weight: bold;
 `;
@@ -21,16 +21,20 @@ export const StyledNavLink = styled(NavLink)`
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: ${(p) => p.theme.space[2]};
   width: 120px;
   height: 40px;
-  background-color: #6b7280;
+  background-color: ${(p) => p.theme.colors.grey};
   color: white;
   font-weight: 600;
   text-decoration: none;
-  border-radius: 8px;
+  border-radius: ${(p) => p.theme.space[3]};
 
   &:hover {
-    background-color: #4b5563;
+    background-color: ${(p) => p.theme.colors.greySecondary};
+  }
+
+  &.active {
+    background: ${(p) => p.theme.colors.greySecondary};
   }
 `;
